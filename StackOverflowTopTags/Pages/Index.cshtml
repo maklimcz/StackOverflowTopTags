@@ -1,0 +1,32 @@
+﻿@page
+@model IndexModel
+
+<div class="container text-center">
+    <canvas id="word_cloud" width="800" height="600"></canvas>
+</div>
+
+<div class="lead pb-3">
+    The below list presents top @Model.Tags.Count() popular tags on StackOverflow as of @Model.AsOfDate.ToString().
+</div>
+
+<ol>
+@foreach (var tag in Model.Tags)
+{
+    <li id="@tag.Name">
+        <h3 class="font-monospace"><a href="https://stackoverflow.com/questions/tagged/@tag.Name">@tag.Name</a></h3>
+        <div class="text-muted">@tag.AbsolutePopularity.ToString("n0") questions (@Math.Round(100*tag.RelativePopularity, 2)%)</div>
+    </li>
+}
+</ol>
+
+<script src="lib/wordcloud2/wordcloud2.js"></script>
+<script type ="text/javascript">
+    let words = @Html.Raw(Model.WordCloud(100))
+    WordCloud(document.getElementById('word_cloud'), { 
+        list: words, 
+        weightFactor: 3000,
+        gridSize: 20,
+        fontFamily: "monospace",
+        click: (item, dimension, event) => document.getElementById(item[0]).scrollIntoView()
+    });
+</script>
